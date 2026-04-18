@@ -109,24 +109,34 @@ if (require.main === module) {
       const tag = args[0]?.replace(/^#/, "");
       const mems = listMemories(tag);
       if (mems.length === 0) { console.log("No memories found."); break; }
-      mems.forEach((m) => console.log(`[${m.id}] ${m.content} (${m.tags.map(t => "#"+t).join(" ")})`));
-      break;
-    }
-    case "delete": {
-      const id = args[0];
-      if (!id) { console.error("Usage: claude-mem delete <id>"); process.exit(1); }
-      const ok = deleteMemory(id);
-      console.log(ok ? `Deleted ${id}` : `Memory ${id} not found`);
+      // Show newest memories first — more useful when the list gets long
+      const sorted = [...mems].reverse();
+      sorted.forEach((m) => {
+        const tagStr = m.tags.length ? " [" + m.tags.map((t) => "#" + t).join(" ") + "]" : "";
+        console.log(`[${m.id}] ${m.content}${tagStr}`);
+      });
       break;
     }
     case "search": {
       const query = args.join(" ");
       if (!query) { console.error("Usage: claude-mem search <query>"); process.exit(1); }
       const results = searchMemories(query);
-      results.forEach((m) => console.log(`[${m.id}] ${m.content}`));
+      if (results.length === 0) { console.log("No matches found."); break; }
+      results.forEach((m) => {
+        const tagStr = m.tags.length ? " [" + m.tags.map((t) => "#" + t).join(" ") + "]" : "";
+        console.log(`[${m.id}] ${m.content}${tagStr}`);
+      });
+      break;
+    }
+    case "delete": {
+      const id = args[0];
+      if (!id) { console.error("Usage: claude-mem delete <id>"); process.exit(1); }
+      const ok = deleteMemory(id);
+      console.log(ok ? `Deleted memory [${id}]` : `No memory found with id [${id}]`);
       break;
     }
     default:
-      console.log("claude-mem <add|list|delete|search> [...args]");
+      console.log("Usage: claude-mem <add|list|search|delete> [...args]");
+      process.exit(1);
   }
 }
