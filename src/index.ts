@@ -109,10 +109,10 @@ if (require.main === module) {
       const tag = args[0]?.replace(/^#/, "");
       const mems = listMemories(tag);
       if (mems.length === 0) { console.log("No memories found."); break; }
-      // Show most recent memories first
+      // Show newest memories first for easier scanning
       const sorted = [...mems].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       sorted.forEach((m) => {
-        const tagStr = m.tags.length ? ` [${m.tags.map((t) => `#${t}`).join(" ")}]` : "";
+        const tagStr = m.tags.length ? ` [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
         console.log(`[${m.id}]${tagStr} ${m.content}`);
       });
       break;
@@ -120,10 +120,10 @@ if (require.main === module) {
     case "search": {
       const query = args.join(" ");
       if (!query) { console.error("Usage: claude-mem search <query>"); process.exit(1); }
-      const results = searchMemories(query);
-      if (results.length === 0) { console.log("No memories found."); break; }
-      results.forEach((m) => {
-        const tagStr = m.tags.length ? ` [${m.tags.map((t) => `#${t}`).join(" ")}]` : "";
+      const mems = searchMemories(query);
+      if (mems.length === 0) { console.log("No memories found."); break; }
+      mems.forEach((m) => {
+        const tagStr = m.tags.length ? ` [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
         console.log(`[${m.id}]${tagStr} ${m.content}`);
       });
       break;
