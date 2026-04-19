@@ -112,32 +112,31 @@ if (require.main === module) {
       // Show most recent memories first
       const sorted = [...mems].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       sorted.forEach((m) => {
-        const tagStr = m.tags.length ? " [" + m.tags.map((t) => "#" + t).join(", ") + "]" : "";
-        console.log(`[${m.id}] ${m.content}${tagStr}`);
-      });
-      break;
-    }
-    case "search": {
-      const query = args.join(" ");
-      if (!query) { console.error("Usage: claude-mem search <query>"); process.exit(1); }
-      const mems = searchMemories(query);
-      if (mems.length === 0) { console.log("No memories found."); break; }
-      mems.forEach((m) => {
-        const tagStr = m.tags.length ? " [" + m.tags.map((t) => "#" + t).join(", ") + "]" : "";
-        console.log(`[${m.id}] ${m.content}${tagStr}`);
+        const tagStr = m.tags.length ? ` [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
+        console.log(`[${m.id}]${tagStr} ${m.content}`);
       });
       break;
     }
     case "delete": {
       const id = args[0];
       if (!id) { console.error("Usage: claude-mem delete <id>"); process.exit(1); }
-      const deleted = deleteMemory(id);
-      console.log(deleted ? `Deleted memory [${id}]` : `Memory [${id}] not found.`);
+      const ok = deleteMemory(id);
+      console.log(ok ? `Deleted memory [${id}]` : `Memory [${id}] not found.`);
       break;
     }
-    default: {
-      console.log("Usage: claude-mem <add|list|search|delete> [...args]");
-      process.exit(1);
+    case "search": {
+      const query = args.join(" ");
+      if (!query) { console.error("Usage: claude-mem search <query>"); process.exit(1); }
+      const results = searchMemories(query);
+      if (results.length === 0) { console.log("No matching memories."); break; }
+      results.forEach((m) => {
+        const tagStr = m.tags.length ? ` [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
+        console.log(`[${m.id}]${tagStr} ${m.content}`);
+      });
+      break;
     }
+    default:
+      console.error("Commands: add, list, delete, search");
+      process.exit(1);
   }
 }
