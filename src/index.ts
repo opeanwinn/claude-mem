@@ -109,11 +109,11 @@ if (require.main === module) {
       const tag = args[0]?.replace(/^#/, "");
       const mems = listMemories(tag);
       if (mems.length === 0) { console.log("No memories found."); break; }
-      // Show newest memories first for easier scanning
+      // Show most recent memories first
       const sorted = [...mems].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       sorted.forEach((m) => {
-        const tagStr = m.tags.length ? ` [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
-        console.log(`[${m.id}]${tagStr} ${m.content}`);
+        const tagStr = m.tags.length ? " [" + m.tags.map((t) => "#" + t).join(", ") + "]" : "";
+        console.log(`[${m.id}] ${m.content}${tagStr}`);
       });
       break;
     }
@@ -123,20 +123,21 @@ if (require.main === module) {
       const mems = searchMemories(query);
       if (mems.length === 0) { console.log("No memories found."); break; }
       mems.forEach((m) => {
-        const tagStr = m.tags.length ? ` [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
-        console.log(`[${m.id}]${tagStr} ${m.content}`);
+        const tagStr = m.tags.length ? " [" + m.tags.map((t) => "#" + t).join(", ") + "]" : "";
+        console.log(`[${m.id}] ${m.content}${tagStr}`);
       });
       break;
     }
     case "delete": {
       const id = args[0];
       if (!id) { console.error("Usage: claude-mem delete <id>"); process.exit(1); }
-      const ok = deleteMemory(id);
-      console.log(ok ? `Deleted memory [${id}]` : `Memory [${id}] not found.`);
+      const deleted = deleteMemory(id);
+      console.log(deleted ? `Deleted memory [${id}]` : `Memory [${id}] not found.`);
       break;
     }
-    default:
+    default: {
       console.log("Usage: claude-mem <add|list|search|delete> [...args]");
       process.exit(1);
+    }
   }
 }
