@@ -109,10 +109,10 @@ if (require.main === module) {
       const tag = args[0]?.replace(/^#/, "");
       const mems = listMemories(tag);
       if (mems.length === 0) { console.log("No memories found."); break; }
-      // Show newest memories first
-      const sorted = [...mems].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      // Print newest memories first so the most recent ones are easiest to see
+      const sorted = [...mems].reverse();
       sorted.forEach((m) => {
-        const tagStr = m.tags.length ? `  [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
+        const tagStr = m.tags.length ? " [" + m.tags.map((t) => "#" + t).join(", ") + "]" : "";
         console.log(`[${m.id}] ${m.content}${tagStr}`);
       });
       break;
@@ -120,24 +120,23 @@ if (require.main === module) {
     case "delete": {
       const id = args[0];
       if (!id) { console.error("Usage: claude-mem delete <id>"); process.exit(1); }
-      const ok = deleteMemory(id);
-      console.log(ok ? `Deleted memory [${id}]` : `Memory [${id}] not found.`);
+      const deleted = deleteMemory(id);
+      console.log(deleted ? `Deleted memory [${id}]` : `No memory found with id [${id}]`);
       break;
     }
     case "search": {
       const query = args.join(" ");
       if (!query) { console.error("Usage: claude-mem search <query>"); process.exit(1); }
       const results = searchMemories(query);
-      if (results.length === 0) { console.log("No matching memories."); break; }
+      if (results.length === 0) { console.log("No memories matched."); break; }
       results.forEach((m) => {
-        const tagStr = m.tags.length ? `  [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
+        const tagStr = m.tags.length ? " [" + m.tags.map((t) => "#" + t).join(", ") + "]" : "";
         console.log(`[${m.id}] ${m.content}${tagStr}`);
       });
       break;
     }
-    default: {
-      console.log("Usage: claude-mem <add|list|delete|search> [...args]");
+    default:
+      console.error("Commands: add, list, delete, search");
       process.exit(1);
-    }
   }
 }
