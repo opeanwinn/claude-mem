@@ -100,18 +100,8 @@ function countOccurrences(text: string, substring: string): number {
   let pos = 0;
   while ((pos = text.indexOf(substring, pos)) !== -1) {
     count++;
+    // Advance by substring length to avoid overlapping matches
     pos += substring.length;
   }
   return count;
-}
-
-/**
- * Filter memories by one or more tags (AND logic)
- */
-export function filterByTags(memories: Memory[], tags: string[]): Memory[] {
-  if (tags.length === 0) return memories;
-  return memories.filter((memory) => {
-    const memoryTags = memory.tags ?? [];
-    return tags.every((tag) => memoryTags.includes(tag));
-  });
 }
