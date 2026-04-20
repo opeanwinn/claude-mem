@@ -71,13 +71,18 @@ export function searchMemories(
       score += partialTagMatches * 3; // Partial tag matches still weighted high
     }
 
+    // Also boost score slightly for more recent memories (newer = higher index assumed)
+    // This gives a small tiebreaker preference to recently added memories
     if (score > 0) {
       results.push({ memory, score });
     }
   }
 
-  // Sort by score descending
-  results.sort((a, b) => b.score - a.score);
+  // Sort by score descending, using createdAt as a tiebreaker for equal scores
+  results.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return new Date(b.memory.createdAt).getTime() - new Date(a.memory.createdAt).getTime();
+  });
 
   if (limit !== undefined && limit > 0) {
     results = results.slice(0, limit);
