@@ -64,9 +64,11 @@ export function searchMemories(
       const contentMatches = countOccurrences(content, keyword);
       score += contentMatches * 2; // Weight content matches higher
 
-      // Check tag matches
-      const tagMatches = memoryTags.filter((tag) => tag.includes(keyword)).length;
-      score += tagMatches * 3; // Weight tag matches highest
+      // Check tag matches - exact tag match scores higher than partial
+      const exactTagMatches = memoryTags.filter((tag) => tag === keyword).length;
+      const partialTagMatches = memoryTags.filter((tag) => tag !== keyword && tag.includes(keyword)).length;
+      score += exactTagMatches * 5; // Exact tag matches score highest
+      score += partialTagMatches * 3; // Partial tag matches still weighted high
     }
 
     if (score > 0) {
