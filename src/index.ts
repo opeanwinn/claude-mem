@@ -109,11 +109,11 @@ if (require.main === module) {
       const tag = args[0]?.replace(/^#/, "");
       const mems = listMemories(tag);
       if (mems.length === 0) { console.log("No memories found."); break; }
-      // Show most recent memories first
+      // Show newest memories first
       const sorted = [...mems].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       sorted.forEach((m) => {
-        const tagStr = m.tags.length ? ` [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
-        console.log(`[${m.id}]${tagStr} ${m.content}`);
+        const tagStr = m.tags.length ? `  [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
+        console.log(`[${m.id}] ${m.content}${tagStr}`);
       });
       break;
     }
@@ -130,13 +130,14 @@ if (require.main === module) {
       const results = searchMemories(query);
       if (results.length === 0) { console.log("No matching memories."); break; }
       results.forEach((m) => {
-        const tagStr = m.tags.length ? ` [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
-        console.log(`[${m.id}]${tagStr} ${m.content}`);
+        const tagStr = m.tags.length ? `  [${m.tags.map(t => `#${t}`).join(" ")}]` : "";
+        console.log(`[${m.id}] ${m.content}${tagStr}`);
       });
       break;
     }
-    default:
-      console.error("Commands: add, list, delete, search");
+    default: {
+      console.log("Usage: claude-mem <add|list|delete|search> [...args]");
       process.exit(1);
+    }
   }
 }
