@@ -45,12 +45,14 @@ export interface AddMemoryOptions {
  * Options for searching memories
  */
 export interface SearchOptions {
-  /** Maximum number of results to return */
+  /** Maximum number of results to return (default: 10) */
   limit?: number;
   /** Filter results by tags */
   tags?: string[];
-  /** Whether the search should be case-sensitive */
+  /** Whether the search should be case-sensitive (default: false) */
   caseSensitive?: boolean;
+  /** Minimum score threshold to include a result (0.0 - 1.0) */
+  minScore?: number;
 }
 
 /**
